@@ -4,6 +4,7 @@ use std::{
     net::{IpAddr, Ipv4Addr},
 };
 
+use avalanche_types::constants;
 use ruma::{OwnedServerName, RoomVersionId};
 use serde::{de::IgnoredAny, Deserialize};
 use tracing::warn;
@@ -79,6 +80,8 @@ pub struct Config {
     pub turn_secret: String,
     #[serde(default = "default_turn_ttl")]
     pub turn_ttl: u64,
+    #[serde(default = "default_network_id")]
+    pub network_id: u32,
 
     pub emergency_password: Option<String>,
 
@@ -195,6 +198,7 @@ impl fmt::Display for Config {
                 }
                 &lst.join(", ")
             }),
+            ("NetworkID", &self.network_id.to_string()),
         ];
 
         let mut msg: String = "Active config values:\n\n".to_owned();
@@ -274,4 +278,8 @@ fn default_turn_ttl() -> u64 {
 // I know, it's a great name
 pub fn default_default_room_version() -> RoomVersionId {
     RoomVersionId::V9
+}
+
+fn default_network_id() -> u32 {
+    constants::KOPERNIKUS_NETWORK_ID // Default to kopernikus
 }
