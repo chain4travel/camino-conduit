@@ -31,10 +31,6 @@ modules.xml
 
 ### vscode ###
 .vscode/*
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-*.code-workspace
 
 ### Windows ###
 # Windows thumbnail cache files
