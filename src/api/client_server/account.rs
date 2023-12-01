@@ -74,6 +74,11 @@ pub async fn get_register_available_route(
 /// - Creates a new account and populates it with default account data
 /// - If `inhibit_login` is false: Creates a device and returns device id and access_token
 pub async fn register_route(body: Ruma<register::v3::Request>) -> Result<register::v3::Response> {
+    return Err(Error::BadRequest(
+        ErrorKind::Forbidden,
+        "Registration has been disabled.",
+    ));
+
     if !services().globals.allow_registration()
         && !body.from_appservice
         && services().globals.config.registration_token.is_none()

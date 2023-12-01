@@ -3084,7 +3084,7 @@ dependencies = [
 [[package]]
 name = "ruma"
 version = "0.8.2"
-source = "git+https://github.com/chain4travel/camino-ruma?rev=451b2ebbf0e1f22e61d359ee452bf7f3c8f89adf#451b2ebbf0e1f22e61d359ee452bf7f3c8f89adf"
+source = "git+https://github.com/chain4travel/camino-ruma?rev=5c8845b4c83c6cc6946b8fe953a2d3ff6c4884f2#5c8845b4c83c6cc6946b8fe953a2d3ff6c4884f2"
 dependencies = [
  "assign",
  "js_int",
@@ -3102,7 +3102,7 @@ dependencies = [
 [[package]]
 name = "ruma-appservice-api"
 version = "0.8.1"
-source = "git+https://github.com/chain4travel/camino-ruma?rev=451b2ebbf0e1f22e61d359ee452bf7f3c8f89adf#451b2ebbf0e1f22e61d359ee452bf7f3c8f89adf"
+source = "git+https://github.com/chain4travel/camino-ruma?rev=5c8845b4c83c6cc6946b8fe953a2d3ff6c4884f2#5c8845b4c83c6cc6946b8fe953a2d3ff6c4884f2"
 dependencies = [
  "js_int",
  "ruma-common",
@@ -3113,7 +3113,7 @@ dependencies = [
 [[package]]
 name = "ruma-client-api"
 version = "0.16.2"
-source = "git+https://github.com/chain4travel/camino-ruma?rev=451b2ebbf0e1f22e61d359ee452bf7f3c8f89adf#451b2ebbf0e1f22e61d359ee452bf7f3c8f89adf"
+source = "git+https://github.com/chain4travel/camino-ruma?rev=5c8845b4c83c6cc6946b8fe953a2d3ff6c4884f2#5c8845b4c83c6cc6946b8fe953a2d3ff6c4884f2"
 dependencies = [
  "assign",
  "bytes",
@@ -3130,7 +3130,7 @@ dependencies = [
 [[package]]
 name = "ruma-common"
 version = "0.11.3"
-source = "git+https://github.com/chain4travel/camino-ruma?rev=451b2ebbf0e1f22e61d359ee452bf7f3c8f89adf#451b2ebbf0e1f22e61d359ee452bf7f3c8f89adf"
+source = "git+https://github.com/chain4travel/camino-ruma?rev=5c8845b4c83c6cc6946b8fe953a2d3ff6c4884f2#5c8845b4c83c6cc6946b8fe953a2d3ff6c4884f2"
 dependencies = [
  "base64 0.21.5",
  "bytes",
@@ -3158,7 +3158,7 @@ dependencies = [
 [[package]]
 name = "ruma-federation-api"
 version = "0.7.1"
-source = "git+https://github.com/chain4travel/camino-ruma?rev=451b2ebbf0e1f22e61d359ee452bf7f3c8f89adf#451b2ebbf0e1f22e61d359ee452bf7f3c8f89adf"
+source = "git+https://github.com/chain4travel/camino-ruma?rev=5c8845b4c83c6cc6946b8fe953a2d3ff6c4884f2#5c8845b4c83c6cc6946b8fe953a2d3ff6c4884f2"
 dependencies = [
  "js_int",
  "ruma-common",
@@ -3169,7 +3169,7 @@ dependencies = [
 [[package]]
 name = "ruma-identifiers-validation"
 version = "0.9.1"
-source = "git+https://github.com/chain4travel/camino-ruma?rev=451b2ebbf0e1f22e61d359ee452bf7f3c8f89adf#451b2ebbf0e1f22e61d359ee452bf7f3c8f89adf"
+source = "git+https://github.com/chain4travel/camino-ruma?rev=5c8845b4c83c6cc6946b8fe953a2d3ff6c4884f2#5c8845b4c83c6cc6946b8fe953a2d3ff6c4884f2"
 dependencies = [
  "js_int",
  "thiserror",
@@ -3178,7 +3178,7 @@ dependencies = [
 [[package]]
 name = "ruma-identity-service-api"
 version = "0.7.1"
-source = "git+https://github.com/chain4travel/camino-ruma?rev=451b2ebbf0e1f22e61d359ee452bf7f3c8f89adf#451b2ebbf0e1f22e61d359ee452bf7f3c8f89adf"
+source = "git+https://github.com/chain4travel/camino-ruma?rev=5c8845b4c83c6cc6946b8fe953a2d3ff6c4884f2#5c8845b4c83c6cc6946b8fe953a2d3ff6c4884f2"
 dependencies = [
  "js_int",
  "ruma-common",
@@ -3188,7 +3188,7 @@ dependencies = [
 [[package]]
 name = "ruma-macros"
 version = "0.11.3"
-source = "git+https://github.com/chain4travel/camino-ruma?rev=451b2ebbf0e1f22e61d359ee452bf7f3c8f89adf#451b2ebbf0e1f22e61d359ee452bf7f3c8f89adf"
+source = "git+https://github.com/chain4travel/camino-ruma?rev=5c8845b4c83c6cc6946b8fe953a2d3ff6c4884f2#5c8845b4c83c6cc6946b8fe953a2d3ff6c4884f2"
 dependencies = [
  "once_cell",
  "proc-macro-crate",
@@ -3203,7 +3203,7 @@ dependencies = [
 [[package]]
 name = "ruma-push-gateway-api"
 version = "0.7.1"
-source = "git+https://github.com/chain4travel/camino-ruma?rev=451b2ebbf0e1f22e61d359ee452bf7f3c8f89adf#451b2ebbf0e1f22e61d359ee452bf7f3c8f89adf"
+source = "git+https://github.com/chain4travel/camino-ruma?rev=5c8845b4c83c6cc6946b8fe953a2d3ff6c4884f2#5c8845b4c83c6cc6946b8fe953a2d3ff6c4884f2"
 dependencies = [
  "js_int",
  "ruma-common",
@@ -3214,7 +3214,7 @@ dependencies = [
 [[package]]
 name = "ruma-signatures"
 version = "0.13.1"
-source = "git+https://github.com/chain4travel/camino-ruma?rev=451b2ebbf0e1f22e61d359ee452bf7f3c8f89adf#451b2ebbf0e1f22e61d359ee452bf7f3c8f89adf"
+source = "git+https://github.com/chain4travel/camino-ruma?rev=5c8845b4c83c6cc6946b8fe953a2d3ff6c4884f2#5c8845b4c83c6cc6946b8fe953a2d3ff6c4884f2"
 dependencies = [
  "base64 0.21.5",
  "ed25519-dalek",
@@ -3230,7 +3230,7 @@ dependencies = [
 [[package]]
 name = "ruma-state-res"
 version = "0.9.1"
-source = "git+https://github.com/chain4travel/camino-ruma?rev=451b2ebbf0e1f22e61d359ee452bf7f3c8f89adf#451b2ebbf0e1f22e61d359ee452bf7f3c8f89adf"
+source = "git+https://github.com/chain4travel/camino-ruma?rev=5c8845b4c83c6cc6946b8fe953a2d3ff6c4884f2#5c8845b4c83c6cc6946b8fe953a2d3ff6c4884f2"
 dependencies = [
  "itertools",
  "js_int",

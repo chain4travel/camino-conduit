@@ -1,22 +1,17 @@
-use super::{DEVICE_ID_LENGTH, TOKEN_LENGTH};
-use crate::{services, utils, utils::camino, Error, Result, Ruma};
+use std::collections::HashMap;
+
+use super::{CAMINO_PAYLOAD_LENGTH, DEVICE_ID_LENGTH, SESSION_ID_LENGTH, TOKEN_LENGTH};
+use crate::{services, utils, Error, Result, Ruma};
 use ruma::{
     api::client::{
         error::ErrorKind,
         session::{get_login_types, login, logout, logout_all},
-        uiaa::UserIdentifier,
+        uiaa::{AuthFlow, AuthType, CaminoParams, UiaaInfo, UserIdentifier},
     },
     events::GlobalAccountDataEventType,
     push, UserId,
 };
-use serde::Deserialize;
-use tracing::{info, warn};
-
-#[derive(Debug, Deserialize)]
-struct Claims {
-    sub: String,
-    //exp: usize,
-}
+use tracing::info;
 
 /// # `GET /_matrix/client/r0/login`
 ///
@@ -43,117 +38,70 @@ pub async fn get_login_types_route(
 /// Note: You can use [`GET /_matrix/client/r0/login`](fn.get_supported_versions_route.html) to see
 /// supported login types.
 pub async fn login_route(body: Ruma<login::v3::Request>) -> Result<login::v3::Response> {
-    // Validate login method
-    // TODO: Other login methods
-    let user_id = match &body.login_info {
-        login::v3::LoginInfo::Password(login::v3::Password {
-            identifier,
-            password,
-        }) => {
-            let username = if let UserIdentifier::UserIdOrLocalpart(user_id) = identifier {
-                user_id.to_lowercase()
-            } else {
-                warn!("Bad login type: {:?}", &body.login_info);
-                return Err(Error::BadRequest(ErrorKind::Forbidden, "Bad login type."));
-            };
-            let user_id =
-                UserId::parse_with_server_name(username, services().globals.server_name())
-                    .map_err(|_| {
-                        Error::BadRequest(ErrorKind::InvalidUsername, "Username is invalid.")
-                    })?;
-            let hash = services()
-                .users
-                .password_hash(&user_id)?
-                .ok_or(Error::BadRequest(
-                    ErrorKind::Forbidden,
-                    "Wrong username or password.",
-                ))?;
+    let mut uiaainfo = UiaaInfo {
+        flows: vec![AuthFlow {
+            stages: vec![AuthType::Camino],
+        }],
+        completed: Vec::new(),
+        params: Default::default(),
+        session: None,
+        auth_error: None,
+    };
 
-            if hash.is_empty() {
-                return Err(Error::BadRequest(
-                    ErrorKind::UserDeactivated,
-                    "The user has been deactivated",
-                ));
-            }
-
-            let hash_matches = argon2::verify_encoded(&hash, password.as_bytes()).unwrap_or(false);
-
-            if !hash_matches {
-                return Err(Error::BadRequest(
-                    ErrorKind::Forbidden,
-                    "Wrong username or password.",
-                ));
-            }
-
-            user_id
-        }
-        login::v3::LoginInfo::Token(login::v3::Token { token }) => {
-            if let Some(jwt_decoding_key) = services().globals.jwt_decoding_key() {
-                let token = jsonwebtoken::decode::<Claims>(
-                    token,
-                    jwt_decoding_key,
-                    &jsonwebtoken::Validation::default(),
-                )
-                .map_err(|_| Error::BadRequest(ErrorKind::InvalidUsername, "Token is invalid."))?;
-                let username = token.claims.sub.to_lowercase();
-                UserId::parse_with_server_name(username, services().globals.server_name()).map_err(
-                    |_| Error::BadRequest(ErrorKind::InvalidUsername, "Username is invalid."),
-                )?
-            } else {
-                return Err(Error::BadRequest(
-                    ErrorKind::Unknown,
-                    "Token login is not supported (server has no jwt decoding key).",
-                ));
-            }
-        }
-        login::v3::LoginInfo::ApplicationService(login::v3::ApplicationService { identifier }) => {
-            if !body.from_appservice {
-                return Err(Error::BadRequest(
-                    ErrorKind::Forbidden,
-                    "Forbidden login type.",
-                ));
-            };
-            let username = if let UserIdentifier::UserIdOrLocalpart(user_id) = identifier {
-                user_id.to_lowercase()
-            } else {
-                return Err(Error::BadRequest(ErrorKind::Forbidden, "Bad login type."));
-            };
-            let user_id =
-                UserId::parse_with_server_name(username, services().globals.server_name())
-                    .map_err(|_| {
-                        Error::BadRequest(ErrorKind::InvalidUsername, "Username is invalid.")
-                    })?;
-            user_id
-        }
-        login::v3::LoginInfo::Camino(login::v3::CaminoLoginInfo {
-            public_key,
-            signature,
-        }) => {
-            let camino_address = camino::verify_signature(
-                public_key,
-                signature,
-                services().globals.config.network_id,
-            )
-            .map_err(|_| {
-                Error::BadRequest(ErrorKind::ThreepidAuthFailed, "Invalid signed public key.")
-            })?;
-
-            let user_id = UserId::parse_with_server_name(
-                camino_address.to_lowercase(),
-                services().globals.server_name(),
-            )
-            .map_err(|_| Error::BadRequest(ErrorKind::InvalidUsername, "Username is invalid."))?;
-
-            user_id
-        }
+    // get username from identifier
+    let username = match &body.identifier {
+        UserIdentifier::UserIdOrLocalpart(username) => username,
         _ => {
-            warn!("Unsupported or unknown login type: {:?}", &body.login_info);
             return Err(Error::BadRequest(
-                ErrorKind::Unknown,
-                "Unsupported login type.",
-            ));
+                ErrorKind::Unrecognized,
+                "Identifier type not recognized.",
+            ))
         }
     };
+
+    // get user id from username
+    let user_id =
+        UserId::parse_with_server_name(username.to_lowercase(), services().globals.server_name())
+            .ok()
+            .filter(|user_id| {
+                !user_id.is_historical()
+                    && user_id.server_name() == services().globals.server_name()
+            })
+            .ok_or(Error::BadRequest(
+                ErrorKind::InvalidUsername,
+                "Username is invalid.",
+            ))?;
+
+    if let Some(auth) = &body.auth {
+        // Try auth
+        let (worked, uiaainfo) = services()
+            .uiaa
+            .try_auth(&user_id, "".into(), auth, &uiaainfo)?;
+        if !worked {
+            return Err(Error::Uiaa(uiaainfo));
+        }
+    // Success!
+    } else if let Some(json) = body.json_body {
+        uiaainfo.params = serde_json::value::to_raw_value(&HashMap::from([(
+            AuthType::Camino.as_str(),
+            &CaminoParams {
+                payload: utils::random_string(CAMINO_PAYLOAD_LENGTH),
+            },
+        )]))
+        .map_err(|_| {
+            Error::BadRequest(
+                ErrorKind::Unknown,
+                "Failed to generate payload for Camino uiaa.",
+            )
+        })?;
+        uiaainfo.session = Some(utils::random_string(SESSION_ID_LENGTH));
+        services()
+            .uiaa
+            .create(&user_id, "".into(), &uiaainfo, &json)?;
+        return Err(Error::Uiaa(uiaainfo));
+    } else {
+        return Err(Error::BadRequest(ErrorKind::NotJson, "Not json."));
+    }
 
     if !services().users.exists(&user_id)? {
         // Create user
@@ -173,12 +121,6 @@ pub async fn login_route(body: Ruma<login::v3::Request>) -> Result<login::v3::Re
         )?;
     }
 
-    // Generate new device id if the user didn't specify one
-    let device_id = body
-        .device_id
-        .clone()
-        .unwrap_or_else(|| utils::random_string(DEVICE_ID_LENGTH).into());
-
     // Generate a new token for the device
     let token = utils::random_string(TOKEN_LENGTH);
 
@@ -189,6 +131,12 @@ pub async fn login_route(body: Ruma<login::v3::Request>) -> Result<login::v3::Re
             .all_device_ids(&user_id)
             .any(|x| x.as_ref().map_or(false, |v| v == device_id))
     });
+
+    // Generate new device id if the user didn't specify one // TODO@ check that its ok with device_exists check above
+    let device_id = body
+        .device_id
+        .clone()
+        .unwrap_or_else(|| utils::random_string(DEVICE_ID_LENGTH).into());
 
     if device_exists {
         services().users.set_token(&user_id, &device_id, &token)?;

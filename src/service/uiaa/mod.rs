@@ -1,11 +1,13 @@
 mod data;
 
+use std::collections::HashMap;
+
 pub use data::Data;
 
 use ruma::{
     api::client::{
         error::ErrorKind,
-        uiaa::{AuthData, AuthType, Camino, Password, UiaaInfo, UserIdentifier},
+        uiaa::{AuthData, AuthType, Camino, CaminoParams, Password, UiaaInfo, UserIdentifier},
     },
     CanonicalJsonValue, DeviceId, UserId,
 };
@@ -107,26 +109,40 @@ impl Service {
                     return Ok((false, uiaainfo));
                 }
             }
-            AuthData::Camino(Camino {
-                public_key,
-                signature,
-                ..
-            }) => {
-                let camino_address = utils::camino::verify_signature(public_key, signature, services().globals.config.network_id)
-                    .map_err(|_| {
-                        Error::BadRequest(
-                            ErrorKind::InvalidCaminoAuth,
-                            "Invalid camino auth"
-                        )
-                    })?;
+            AuthData::Camino(Camino { signature, .. }) => {
+                let str = uiaainfo.params.get();
+                let params = serde_json::from_str::<HashMap<&str, CaminoParams>>(str)
+                    .expect("uiaa params should always deserialize");
+                let camino_params =
+                    params
+                        .get(AuthType::Camino.as_str())
+                        .ok_or(Error::BadRequest(
+                            ErrorKind::InvalidParam,
+                            "auth type is camino, but uiaa session doesn't have camino params",
+                        ))?;
+                let camino_address = utils::camino::recover_address(
+                    &camino_params.payload,
+                    signature,
+                    services().globals.config.network_id,
+                )
+                .map_err(|_| {
+                    Error::BadRequest(ErrorKind::InvalidCaminoAuth, "Invalid camino auth")
+                })?;
 
-                UserId::parse_with_server_name(
+                let derived_user_id = UserId::parse_with_server_name(
                     camino_address.to_lowercase(),
                     services().globals.server_name(),
                 )
                 .map_err(|_| {
                     Error::BadRequest(ErrorKind::InvalidUsername, "Username is invalid.")
                 })?;
+
+                if derived_user_id != user_id {
+                    return Err(Error::BadRequest(
+                        ErrorKind::InvalidUsername,
+                        "Username is invalid.",
+                    ));
+                }
 
                 uiaainfo.completed.push(AuthType::Camino);
             }
