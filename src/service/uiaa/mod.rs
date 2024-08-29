@@ -107,18 +107,20 @@ impl Service {
                     return Ok((false, uiaainfo));
                 }
             }
+            // TODO@ is it used? probably only called from register api
             AuthData::Camino(Camino {
                 public_key,
                 signature,
                 ..
             }) => {
-                let camino_address = utils::camino::verify_signature(public_key, signature, services().globals.config.network_id)
-                    .map_err(|_| {
-                        Error::BadRequest(
-                            ErrorKind::InvalidCaminoAuth,
-                            "Invalid camino auth"
-                        )
-                    })?;
+                let camino_address = utils::camino::verify_signature(
+                    public_key,
+                    signature,
+                    services().globals.config.network_id,
+                )
+                .map_err(|_| {
+                    Error::BadRequest(ErrorKind::InvalidCaminoAuth, "Invalid camino auth")
+                })?;
 
                 UserId::parse_with_server_name(
                     camino_address.to_lowercase(),
