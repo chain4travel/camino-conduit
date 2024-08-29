@@ -50,7 +50,9 @@ pub fn verify_signature(message: &str, signature: &str, network_id: u32) -> Resu
         return Err(Error::SignatureMismatchError);
     }
 
-    public_key
-        .to_hrp_address(network_id, "T")
-        .map_err(|_| Error::FormatAddressError)
+    Ok(public_key.to_eth_address())
+
+    // public_key
+    //     .to_hrp_address(network_id, "T")
+    //     .map_err(|_| Error::FormatAddressError)
 }
