@@ -8,7 +8,9 @@
             "type": "lldb",
             "request": "launch",
             "name": "Debug conduit",
-            "sourceLanguages": ["rust"],
+            "sourceLanguages": [
+                "rust"
+            ],
             "cargo": {
                 "args": [
                     "build",
@@ -27,7 +29,12 @@
                 "CONDUIT_SERVER_NAME": "localhost",
                 "CONDUIT_DATABASE_PATH": "/tmp",
                 "CONDUIT_ADDRESS": "0.0.0.0",
-                "CONDUIT_PORT": "6167"
+                "CONDUIT_PORT": "6167",
+                "CONDUIT_LOG": "debug,rocket=off,_=off,sled=off",
+                "CONDUIT_NETWORK_ID": "1002",
+                "CONDUIT_ALLOW_REGISTRATION": "false",
+                "CONDUIT_ALLOW_CHECK_FOR_UPDATES": "false",
+                "CONDUIT_DATABASE_BACKEND": "rocksdb"
             },
             "cwd": "${workspaceFolder}"
         }

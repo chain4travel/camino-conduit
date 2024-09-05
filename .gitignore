@@ -31,10 +31,6 @@ modules.xml
 
 ### vscode ###
 .vscode/*
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-*.code-workspace
 
 ### Windows ###
 # Windows thumbnail cache files
@@ -74,3 +70,6 @@ cached_target
 
 # mdbook output
 public/
+
+# build/debug
+build/
