@@ -1,12 +1,13 @@
 use super::{DEVICE_ID_LENGTH, TOKEN_LENGTH};
-use crate::{services, utils, Error, Result, Ruma};
+use crate::{services, utils, utils::camino, Error, Result, Ruma};
 use ruma::{
     api::client::{
         error::ErrorKind,
         session::{get_login_types, login, logout, logout_all},
         uiaa::UserIdentifier,
     },
-    UserId,
+    events::GlobalAccountDataEventType,
+    push, UserId,
 };
 use serde::Deserialize;
 use tracing::{info, warn};
@@ -163,6 +164,27 @@ pub async fn login_route(body: Ruma<login::v3::Request>) -> Result<login::v3::Re
 
             user_id
         }
+        login::v3::LoginInfo::Camino(login::v3::CaminoLoginInfo {
+            public_key,
+            signature,
+        }) => {
+            let camino_address = camino::verify_signature(
+                public_key,
+                signature,
+                services().globals.config.network_id,
+            )
+            .map_err(|_| {
+                Error::BadRequest(ErrorKind::ThreepidAuthFailed, "Invalid signed public key.")
+            })?;
+
+            let user_id = UserId::parse_with_server_name(
+                camino_address.to_lowercase(),
+                services().globals.server_name(),
+            )
+            .map_err(|_| Error::BadRequest(ErrorKind::InvalidUsername, "Username is invalid."))?;
+
+            user_id
+        }
         _ => {
             warn!("Unsupported or unknown login type: {:?}", &body.login_info);
             return Err(Error::BadRequest(
@@ -171,6 +193,24 @@ pub async fn login_route(body: Ruma<login::v3::Request>) -> Result<login::v3::Re
             ));
         }
     };
+
+    if !services().users.exists(&user_id)? {
+        // Create user
+        services().users.create(&user_id, None)?;
+
+        // Initial account data
+        services().account_data.update(
+            None,
+            &user_id,
+            GlobalAccountDataEventType::PushRules.to_string().into(),
+            &serde_json::to_value(ruma::events::push_rules::PushRulesEvent {
+                content: ruma::events::push_rules::PushRulesEventContent {
+                    global: push::Ruleset::server_default(&user_id),
+                },
+            })
+            .expect("to json always works"),
+        )?;
+    }
 
     // Generate new device id if the user didn't specify one
     let device_id = body

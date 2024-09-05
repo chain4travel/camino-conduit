@@ -120,6 +120,13 @@ threadpool = "1.8.1"
 # Used for ruma wrapper
 serde_html_form = "0.2.0"
 
+# Used for matrix spec type definitions and helpers
+# avalanche-types = { version = "0.1" }
+avalanche-types = { git = "https://github.com/chain4travel/camino-rust", rev = "4aa9731c5dcd8cfb27cdb571ffa0bae2e038e686" }
+# avalanche-types = { path = "../camino-rust/crates/avalanche-types" }
+
+ethers = "2.0"
+
 thread_local = "1.1.7"
 # used for TURN server authentication
 hmac = "0.12.1"
@@ -164,8 +171,10 @@ features = [
   "unstable-msc3575",
   "unstable-unspecified",
 ]
+# git = "https://github.com/ruma/ruma" # original ruma
+# path = "../camino-ruma/crates/ruma" # local path for development
 git = "https://github.com/chain4travel/camino-ruma"
-rev = "ef40b184b7410a93e933b4ad719a72aea1bdd20e"
+rev = "2bc4efd6e448739a6786e5d23989bb4fdfda7849"
 
 [dependencies.rocksdb]
 features = ["lz4", "multi-threaded-cf", "zstd"]

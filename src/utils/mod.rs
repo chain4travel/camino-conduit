@@ -1,3 +1,4 @@
+pub mod camino;
 pub mod error;
 
 use argon2::{Config, Variant};
