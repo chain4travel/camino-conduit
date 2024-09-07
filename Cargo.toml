@@ -164,7 +164,8 @@ features = [
   "unstable-msc3575",
   "unstable-unspecified",
 ]
-git = "https://github.com/ruma/ruma"
+git = "https://github.com/chain4travel/camino-ruma"
+rev = "ef40b184b7410a93e933b4ad719a72aea1bdd20e"
 
 [dependencies.rocksdb]
 features = ["lz4", "multi-threaded-cf", "zstd"]
