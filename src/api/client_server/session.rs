@@ -210,6 +210,25 @@ pub async fn login_route(body: Ruma<login::v3::Request>) -> Result<login::v3::Re
             })
             .expect("to json always works"),
         )?;
+
+        // If this is the first real user, grant them admin privileges
+        // Note: the server user, @conduit:servername, is generated first
+        if let Some(admin_room) = services().admin.get_admin_room()? {
+            if services()
+                .rooms
+                .state_cache
+                .room_joined_count(&admin_room)?
+                == Some(1)
+            {
+                let mut displayname = user_id.localpart().to_owned();
+                services()
+                    .admin
+                    .make_user_admin(&user_id, displayname)
+                    .await?;
+
+                warn!("Granting {} admin privileges as the first user", user_id);
+            }
+        }
     }
 
     // Generate new device id if the user didn't specify one
