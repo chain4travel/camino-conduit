@@ -83,8 +83,15 @@ pub struct Config {
     pub turn_secret: String,
     #[serde(default = "default_turn_ttl")]
     pub turn_ttl: u64,
-    #[serde(default = "default_network_id")]
-    pub network_id: u32,
+
+    #[serde(default)]
+    pub camino_network_id: u32,
+    #[serde(default)]
+    pub camino_app_service_url: String,
+    #[serde(default)]
+    pub camino_app_service_as_token: String,
+    #[serde(default)]
+    pub camino_app_service_hs_token: String,
 
     pub emergency_password: Option<String>,
 
@@ -235,7 +242,7 @@ impl fmt::Display for Config {
             }),
             ("Well-known server name", well_known_server.as_str()),
             ("Well-known client URL", &self.well_known_client()),
-            ("NetworkID", &self.network_id.to_string()),
+            ("NetworkID", &self.camino_network_id.to_string()),
         ];
 
         let mut msg: String = "Active config values:\n\n".to_owned();

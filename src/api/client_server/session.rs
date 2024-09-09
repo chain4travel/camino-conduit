@@ -171,7 +171,7 @@ pub async fn login_route(body: Ruma<login::v3::Request>) -> Result<login::v3::Re
             let camino_address = camino::verify_signature(
                 public_key,
                 signature,
-                services().globals.config.network_id,
+                services().globals.config.camino_network_id,
             )
             .map_err(|_| {
                 Error::BadRequest(ErrorKind::ThreepidAuthFailed, "Invalid signed public key.")

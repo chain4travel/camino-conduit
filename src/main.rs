@@ -18,13 +18,13 @@ use http::{
     header::{self, HeaderName, CONTENT_SECURITY_POLICY},
     Method, StatusCode, Uri,
 };
-use ruma::api::{
-    client::{
+use opentelemetry::global;
+use ruma::{api::{
+    appservice::{Namespace, Registration}, client::{
         error::{Error as RumaError, ErrorBody, ErrorKind},
         uiaa::UiaaResponse,
-    },
-    IncomingRequest,
-};
+    }, IncomingRequest
+}, events::room::message::RoomMessageEventContent};
 use tokio::signal;
 use tower::ServiceBuilder;
 use tower_http::{
@@ -205,6 +205,24 @@ async fn run_server() -> io::Result<()> {
 
     tokio::spawn(shutdown_signal(handle.clone()));
 
+    
+   
+
+    let app_service_config = Registration {
+        id: "camino".to_owned(),
+        url:  Some(services().globals.config.camino_app_service_url.to_owned()),
+        as_token:services().globals.config.camino_app_service_as_token.to_owned(),
+        hs_token:  services().globals.config.camino_app_service_hs_token.to_owned(),
+        namespaces: ruma::api::appservice::Namespaces {
+            users: vec![Namespace::new(false, ".*".to_owned())],
+            aliases: vec![Namespace::new(false, ".*".to_owned())],
+            rooms: vec![Namespace::new(false, ".*".to_owned())],
+        },
+        sender_localpart: "camino".to_owned(),
+        protocols: None,
+        rate_limited: None,
+    };
+
     match &config.tls {
         Some(tls) => {
             let conf = RustlsConfig::from_pem_file(&tls.certs, &tls.key).await?;
@@ -212,6 +230,15 @@ async fn run_server() -> io::Result<()> {
 
             #[cfg(feature = "systemd")]
             let _ = sd_notify::notify(true, &[sd_notify::NotifyState::Ready]);
+            
+            match services()
+                .appservice
+                .register_appservice(app_service_config)
+                .await
+            {
+                Ok(id) => info!("Camino app-service registered with ID: {id}"),
+                Err(e) => error!(?e, "Failed to register Camino app-service"),
+            };
 
             server.await?
         }
@@ -221,10 +248,19 @@ async fn run_server() -> io::Result<()> {
             #[cfg(feature = "systemd")]
             let _ = sd_notify::notify(true, &[sd_notify::NotifyState::Ready]);
 
+            match services()
+                .appservice
+                .register_appservice(app_service_config)
+                .await
+            {
+                Ok(id) => info!("Camino app-service registered with ID: {id}"),
+                Err(e) => error!(?e, "Failed to register Camino app-service"),
+            };
+
             server.await?
         }
     }
-
+    
     Ok(())
 }
 

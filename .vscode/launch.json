@@ -27,16 +27,20 @@
                 "RUST_BACKTRACE": "1",
                 "CONDUIT_CONFIG": "",
                 "CONDUIT_SERVER_NAME": "localhost",
-                "CONDUIT_DATABASE_PATH": "/tmp",
+                "CONDUIT_DATABASE_PATH": "build/local/db",
                 "CONDUIT_ADDRESS": "0.0.0.0",
                 "CONDUIT_PORT": "6167",
                 "CONDUIT_LOG": "debug,rocket=off,_=off,sled=off",
-                "CONDUIT_NETWORK_ID": "1002",
                 "CONDUIT_ALLOW_REGISTRATION": "false",
                 "CONDUIT_ALLOW_CHECK_FOR_UPDATES": "false",
-                "CONDUIT_DATABASE_BACKEND": "rocksdb"
+                "CONDUIT_DATABASE_BACKEND": "rocksdb",
+                "CONDUIT_CAMINO_NETWORK_ID": "1002",
+                "CONDUIT_CAMINO_APP_SERVICE_URL": "http://localhost:5000",
+                "CONDUIT_CAMINO_APP_SERVICE_HS_TOKEN": "ugw8243igya57aaABGFfgeyu",
+                "CONDUIT_CAMINO_APP_SERVICE_AS_TOKEN": "wfghWEGh3wgWHEf3478sHFWE",
             },
-            "cwd": "${workspaceFolder}"
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "cleanup-local",
         }
     ]
 }
