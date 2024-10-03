@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM docker.io/rust:1.70-bullseye AS base
+FROM docker.io/rust:1.81.0-bullseye AS base
 
 FROM base AS builder
 WORKDIR /usr/src/conduit
@@ -61,7 +61,6 @@ COPY ./LICENSE ./LICENSE
 COPY ./README.md ./README.md
 COPY debian ./debian
 COPY --from=build-cargo-deb /usr/local/cargo/bin/cargo-deb /usr/local/cargo/bin/cargo-deb
-
 # --no-build makes cargo-deb reuse already compiled project
 RUN cargo deb --no-build
 # => Package is in /usr/src/conduit/target/debian/<project_name>_<version>_<arch>.deb
