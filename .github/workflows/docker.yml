@@ -1,0 +1,21 @@
+name: build-docker-image
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+        - c4t
+        - dev
+env:
+  docker_image: "c4tplatform/camino-conduit"
+
+jobs:
+  build_docker:    
+    name: Build Docker
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: build docker image
+        run: |
+          docker build . -t ${{ env.docker_image }}:temp
