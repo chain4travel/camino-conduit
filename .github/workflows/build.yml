@@ -1,0 +1,18 @@
+name: build-docker-image
+
+on:
+  push:
+    branches:
+        - binary
+
+jobs:
+  build_binary:    
+    name: Build Binary
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: build docker image
+        run: |
+          cd src
+          cargo build --release
