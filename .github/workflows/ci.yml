@@ -30,3 +30,4 @@ jobs:
         run: |
           cd src
           cargo build --release
+          ./target/release/conduit --version
