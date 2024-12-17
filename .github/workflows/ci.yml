@@ -1,4 +1,4 @@
-name: build-docker-image
+name: ci
 
 on:
   workflow_dispatch:
@@ -19,3 +19,14 @@ jobs:
       - name: build docker image
         run: |
           docker build . -t ${{ env.docker_image }}:temp
+  
+  build_binary:    
+    name: Build Binary
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: build binary
+        run: |
+          cd src
+          cargo build --release
