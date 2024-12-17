@@ -44,7 +44,7 @@ jobs:
           
 
       - name: upload binary
-      - uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v2
         with:
           files: camino-conduit-linux-amd64-${{ github.event.release.tag_name }}.tar.gz
 
