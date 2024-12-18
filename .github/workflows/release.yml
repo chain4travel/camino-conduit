@@ -40,8 +40,8 @@ jobs:
         run: |
           cd src
           cargo build --release
-          ./target/release/conduit --version
-          tar -czvf camino-conduit-linux-amd64-${{ github.event.release.tag_name }}.tar.gz --directory=target/release conduit
+          ./target/release/camino-conduit --version
+          tar -czvf camino-conduit-linux-amd64-${{ github.event.release.tag_name }}.tar.gz --directory=target/release camino-conduit
           
 
       - name: upload binary
