@@ -33,7 +33,6 @@ RUN touch src/main.rs && touch src/lib.rs && cargo build --release
 # ONLY USEFUL FOR CI: target stage to extract build artifacts
 FROM scratch AS builder-result
 COPY --from=builder /usr/src/conduit/target/release/camino-conduit /camino-conduit
-RUN /camino-conduit --version
 
 
 
