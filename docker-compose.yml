@@ -31,7 +31,7 @@ services:
             CONDUIT_PORT: 6167
             CONDUIT_MAX_REQUEST_SIZE: 200_000_000 # in bytes, ~200 MB
             CONDUIT_ALLOW_REGISTRATION: 'false'
-            CONDUIT_ALLOW_FEDERATION: 'true'
+            CONDUIT_ALLOW_FEDERATION: 'false'
             CONDUIT_ALLOW_CHECK_FOR_UPDATES: 'false'
             # CONDUIT_TRUSTED_SERVERS: '[""]'
             # CONDUIT_MAX_CONCURRENT_REQUESTS: 10000000
