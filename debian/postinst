@@ -78,7 +78,7 @@ allow_registration = true
 # - Start the line with '#' to remove the condition
 #registration_token = ""
 
-allow_federation = true
+allow_federation = false
 allow_check_for_updates = true
 
 # Enable the display name lightning bolt on registration.

@@ -21,10 +21,31 @@ jobs:
           password: ${{ secrets.DOCKER_PASS }}
           
       - name: Build and push Docker images
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           push: true
           tags: |
             ${{ env.docker_image }}:latest
             ${{ env.docker_image }}:${{ github.event.release.tag_name }}
+
+
+  build_binary:    
+    name: Build Binary
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: build binary
+        run: |
+          cd src
+          cargo build --release
+          ../target/release/camino-conduit --version
+          tar -czvf camino-conduit-linux-amd64-${{ github.event.release.tag_name }}.tar.gz --directory=../target/release camino-conduit
+          
+
+      - name: upload binary
+        uses: softprops/action-gh-release@v2
+        with:
+          files: camino-conduit-linux-amd64-${{ github.event.release.tag_name }}.tar.gz
+

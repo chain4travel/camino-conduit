@@ -26,13 +26,13 @@ COPY src src
 # otherwise the build with the fake main.rs from above is newer than the
 # source files (COPY preserves timestamps).
 #
-# Builds conduit and places the binary at /usr/src/conduit/target/release/conduit
+# Builds conduit and places the binary at /usr/src/conduit/target/release/camino-conduit
 RUN touch src/main.rs && touch src/lib.rs && cargo build --release
 
 
 # ONLY USEFUL FOR CI: target stage to extract build artifacts
 FROM scratch AS builder-result
-COPY --from=builder /usr/src/conduit/target/release/conduit /conduit
+COPY --from=builder /usr/src/conduit/target/release/camino-conduit /camino-conduit
 
 
 

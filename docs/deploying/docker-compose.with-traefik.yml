@@ -35,7 +35,7 @@ services:
             # CONDUIT_CONFIG: '/srv/conduit/conduit.toml'  # if you want to configure purely by env vars, set this to an empty string ''
             # Available levels are: error, warn, info, debug, trace - more info at: https://docs.rs/env_logger/*/env_logger/#enabling-logging
             # CONDUIT_ALLOW_ENCRYPTION: 'true'
-            # CONDUIT_ALLOW_FEDERATION: 'true'
+            # CONDUIT_ALLOW_FEDERATION: 'false'
             # CONDUIT_ALLOW_CHECK_FOR_UPDATES: 'true'
             # CONDUIT_DATABASE_PATH: /srv/conduit/.local/share/conduit
             # CONDUIT_MAX_REQUEST_SIZE: 20000000  # in bytes, ~20 MB

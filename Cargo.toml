@@ -8,15 +8,15 @@ dbg_macro = "warn"
 str_to_string = "warn"
 
 [package]
-authors = ["timokoesters <timo@koesters.xyz>"]
-description = "A Matrix homeserver written in Rust"
+authors = ["evlekht <evgeniy.lekht@chain4travel.com>"]
+description = "A Matrix homeserver written in Rust to serve Camino purposes"
 edition = "2021"
 homepage = "https://conduit.rs"
 license = "Apache-2.0"
-name = "conduit"
+name = "camino-conduit"
 readme = "README.md"
-repository = "https://gitlab.com/famedly/conduit"
-version = "0.8.0"
+repository = "https://github.com/chain4travel/camino-conduit"
+version = "1.0.0"
 
 # See also `rust-toolchain.toml`
 rust-version = "1.78.0"
@@ -198,7 +198,7 @@ sqlite = ["parking_lot", "rusqlite", "tokio/signal"]
 systemd = ["sd-notify"]
 
 [[bin]]
-name = "conduit"
+name = "camino-conduit"
 path = "src/main.rs"
 required-features = ["conduit_bin"]
 
@@ -219,7 +219,7 @@ assets = [
     "644",
   ],
   [
-    "target/release/conduit",
+    "target/release/camino-conduit",
     "usr/sbin/matrix-conduit",
     "755",
   ],

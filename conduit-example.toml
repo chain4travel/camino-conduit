@@ -45,7 +45,7 @@ allow_registration = true
 registration_token = ""
 
 allow_check_for_updates = true
-allow_federation = true
+allow_federation = false
 
 # Enable the display name lightning bolt on registration.
 enable_lightning_bolt = true
