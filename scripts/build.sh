@@ -3,6 +3,7 @@
 set -e 
 
 # Camino-conduit root folder
+ORIG_DIR=$(pwd)
 CAMINO_CONDUIT_PATH=$( cd "$( dirname "${BASH_SOURCE[0]}" )"; cd .. && pwd )
 cd "${CAMINO_CONDUIT_PATH}"
 
@@ -20,7 +21,7 @@ cargo build --release
 mkdir -p "${CAMINO_CONDUIT_PATH}/build"
 cp -a target/release/camino-conduit build/
 
-cd -
+cd "$ORIG_DIR"
 
 echo "camino-conduit is built successfully"
 echo "binary saved to ${CAMINO_CONDUIT_PATH}/build/camino-conduit"
