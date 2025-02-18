@@ -51,6 +51,5 @@ jobs:
 
       - name: build binary
         run: |
-          cd src
-          cargo build --release
-          ../target/release/camino-conduit --version
+          ./scripts/build.sh
+          ./build/camino-conduit --version
