@@ -19,7 +19,7 @@ repository = "https://github.com/chain4travel/camino-conduit"
 version = "1.0.0"
 
 # See also `rust-toolchain.toml`
-rust-version = "1.78.0"
+rust-version = "1.81.0"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
