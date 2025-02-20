@@ -10,7 +10,7 @@ env:
 jobs:
   build_docker:    
     name: Build Docker
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
 
@@ -32,7 +32,7 @@ jobs:
 
   build_binary:    
     name: Build Binary
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
 
@@ -40,7 +40,9 @@ jobs:
         run: |
           ./scripts/build.sh
           ./build/camino-conduit --version
-          tar -czvf camino-conduit-linux-amd64-${{ github.event.release.tag_name }}.tar.gz --directory=./build camino-conduit
+          mkdir -p ./build/camino-conduit-${{ github.event.release.tag_name }}
+          cp ./build/camino-conduit ./build/camino-conduit-${{ github.event.release.tag_name }}/
+          tar -czvf camino-conduit-linux-amd64-${{ github.event.release.tag_name }}.tar.gz --directory=./build camino-conduit-${{ github.event.release.tag_name }}
           
 
       - name: upload binary
