@@ -1,55 +1,58 @@
 name: ci
 
 on:
-  workflow_dispatch:
-  pull_request:
+  push:
     branches:
-        - c4t
-        - dev
-env:
-  docker_image: "c4tplatform/camino-conduit"
+      - main
+  workflow_dispatch:
+
+permissions:
+   id-token: write
+   contents: read
 
 jobs:
-  build_docker:    
-    name: Build Docker
-    runs-on: ubuntu-22.04
+  deploy:
+    name: Deploy to EC2
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-
-      - name: Build Docker image
-        uses: docker/build-push-action@v6
+      
+      - name: Assume role
+        uses: aws-actions/configure-aws-credentials@v2
         with:
-          context: .
-          push: false
-          tags: ${{ env.docker_image }}:temp
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          load: true
-
-
-      - name: Verify image
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: "${{ env.OIDC_ROLE_GITHUB_ARN }}"
+          role-session-name: GithubActions
+      
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+      
+      - name: Build, tag, and push image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
-          docker run --rm ${{ env.docker_image }}:temp --version
-  
-  build_binary:    
-    name: Build Binary
-    runs-on: ubuntu-22.04
-    steps:
-      - uses: actions/checkout@v4
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:latest" >> $GITHUB_OUTPUT
 
-      - name: Cache Cargo dependencies
-        uses: actions/cache@v3
+      - name: Fill in the new image ID in the Amazon ECS task definition
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-            target
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          task-definition: ${{ env.ECS_TASK_DEFINITION }}
+          container-name: ${{ env.CONTAINER_NAME }}
+          image: ${{ steps.build-image.outputs.image }}
 
-      - name: build binary
-        run: |
-          ./scripts/build.sh
-          ./build/camino-conduit --version
+      - name: Deploy Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: ${{ env.ECS_SERVICE }}
+          cluster: ${{ env.ECS_CLUSTER }}
+          wait-for-service-stability: true

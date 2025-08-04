@@ -1,0 +1,36 @@
+{
+    "executionRoleArn": "arn:aws:iam::278308921038:role/camino-conduit-ecs-task-execution-role",
+    "taskRoleArn": "arn:aws:iam::278308921038:role/chain4travel-PROD-task-role",
+    "containerDefinitions": [
+        {
+            "name": "camino-conduit",
+            "image": "278308921038.dkr.ecr.eu-central-1.amazonaws.com/chain4travel-prod-ecr-camino-conduit:latest",
+            "portMappings": [
+                {
+                    "containerPort": 6167
+                }
+            ],
+            "essential": true,
+            "secrets": [
+                {
+                    "name": "STAGE_NAME",
+                    "valueFrom": "arn:aws:secretsmanager:eu-central-1:278308921038:secret:camino-conduit-secret20250701143816788800000001-xws14a"
+                }],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "camino-conduit",
+                    "awslogs-region": "eu-central-1",
+                    "awslogs-stream-prefix": "streaming"
+                }
+            }
+        }
+    ],
+    "family": "camino-conduit",
+    "cpu": "512",
+    "memory": "512",
+    "networkMode": "awsvpc",
+    "requiresCompatibilities": [
+        "FARGATE"
+    ]
+}
