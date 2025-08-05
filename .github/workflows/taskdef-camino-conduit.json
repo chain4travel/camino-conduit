@@ -7,26 +7,73 @@
             "image": "278308921038.dkr.ecr.eu-central-1.amazonaws.com/chain4travel-prod-ecr-camino-conduit:latest",
             "portMappings": [
                 {
-                    "containerPort": 6167
+                    "containerPort": 6167,
+                    "hostPort": 6167,
+                    "protocol": "tcp"
                 }
             ],
             "essential": true,
             "secrets": [
                 {
-                    "name": "STAGE_NAME",
-                    "valueFrom": "arn:aws:secretsmanager:eu-central-1:278308921038:secret:camino-conduit-secret20250701143816788800000001-xws14a"
-                }],
+                    "name": "CONDUIT_ADDRESS",
+                    "valueFrom": "arn:aws:secretsmanager:eu-central-1:278308921038:secret:camino-conduit-secret20250701143816788800000001-xws14a:CONDUIT_ADDRESS::"
+                },
+                {
+                    "name": "CONDUIT_ALLOW_CHECK_FOR_UPDATES",
+                    "valueFrom": "arn:aws:secretsmanager:eu-central-1:278308921038:secret:camino-conduit-secret20250701143816788800000001-xws14a:CONDUIT_ALLOW_CHECK_FOR_UPDATES::"
+                },
+                {
+                    "name": "CONDUIT_ALLOW_FEDERATION",
+                    "valueFrom": "arn:aws:secretsmanager:eu-central-1:278308921038:secret:camino-conduit-secret20250701143816788800000001-xws14a:CONDUIT_ALLOW_FEDERATION::"
+                },
+                {
+                    "name": "CONDUIT_ALLOW_REGISTRATION",
+                    "valueFrom": "arn:aws:secretsmanager:eu-central-1:278308921038:secret:camino-conduit-secret20250701143816788800000001-xws14a:CONDUIT_ALLOW_REGISTRATION::"
+                },
+                {
+                    "name": "CONDUIT_CONFIG",
+                    "valueFrom": "arn:aws:secretsmanager:eu-central-1:278308921038:secret:camino-conduit-secret20250701143816788800000001-xws14a:CONDUIT_CONFIG::"
+                },
+                {
+                    "name": "CONDUIT_DATABASE_BACKEND",
+                    "valueFrom": "arn:aws:secretsmanager:eu-central-1:278308921038:secret:camino-conduit-secret20250701143816788800000001-xws14a:CONDUIT_DATABASE_BACKEND::"
+                },
+                {
+                    "name": "CONDUIT_DATABASE_PATH",
+                    "valueFrom": "arn:aws:secretsmanager:eu-central-1:278308921038:secret:camino-conduit-secret20250701143816788800000001-xws14a:CONDUIT_DATABASE_PATH::"
+                },
+                {
+                    "name": "CONDUIT_LOG",
+                    "valueFrom": "arn:aws:secretsmanager:eu-central-1:278308921038:secret:camino-conduit-secret20250701143816788800000001-xws14a:CONDUIT_LOG::"
+                },
+                {
+                    "name": "CONDUIT_MAX_REQUEST_SIZE",
+                    "valueFrom": "arn:aws:secretsmanager:eu-central-1:278308921038:secret:camino-conduit-secret20250701143816788800000001-xws14a:CONDUIT_MAX_REQUEST_SIZE::"
+                },
+                {
+                    "name": "CONDUIT_NETWORK_ID",
+                    "valueFrom": "arn:aws:secretsmanager:eu-central-1:278308921038:secret:camino-conduit-secret20250701143816788800000001-xws14a:CONDUIT_NETWORK_ID::"
+                },
+                {
+                    "name": "CONDUIT_PORT",
+                    "valueFrom": "arn:aws:secretsmanager:eu-central-1:278308921038:secret:camino-conduit-secret20250701143816788800000001-xws14a:CONDUIT_PORT::"
+                },
+                {
+                    "name": "CONDUIT_SERVER_NAME",
+                    "valueFrom": "arn:aws:secretsmanager:eu-central-1:278308921038:secret:camino-conduit-secret20250701143816788800000001-xws14a:CONDUIT_SERVER_NAME::"
+                }
+            ],
             "logConfiguration": {
                 "logDriver": "awslogs",
                 "options": {
-                    "awslogs-group": "camino-conduit",
+                    "awslogs-group": "/ecs/camino-conduit",
                     "awslogs-region": "eu-central-1",
-                    "awslogs-stream-prefix": "streaming"
+                    "awslogs-stream-prefix": "ecs-camino-conduit"
                 }
             }
         }
     ],
-    "family": "camino-conduit",
+    "family": "camino-conduit-task",
     "cpu": "512",
     "memory": "1024",
     "networkMode": "awsvpc",
