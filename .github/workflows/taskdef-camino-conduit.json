@@ -28,7 +28,7 @@
     ],
     "family": "camino-conduit",
     "cpu": "512",
-    "memory": "512",
+    "memory": "1024",
     "networkMode": "awsvpc",
     "requiresCompatibilities": [
         "FARGATE"
