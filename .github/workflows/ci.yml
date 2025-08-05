@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   build-and-deploy:
-    name: Deploy to EC2
+    name: Deploy to ECS
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
