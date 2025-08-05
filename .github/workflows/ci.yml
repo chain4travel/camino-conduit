@@ -24,8 +24,8 @@ jobs:
       - name: Assume role
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          aws-region: ${{ env.AWS_REGION }}
-          role-to-assume: "${{ env.OIDC_ROLE_GITHUB_ARN }}"
+          aws-region: ${{ vars.AWS_REGION }}
+          role-to-assume: "${{ vars.OIDC_ROLE_GITHUB_ARN }}"
           role-session-name: GithubActions
       
       - name: Login to Amazon ECR
@@ -45,14 +45,14 @@ jobs:
         id: task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-          task-definition: ${{ env.ECS_TASK_DEFINITION }}
-          container-name: ${{ env.CONTAINER_NAME }}
+          task-definition: ${{ vars.ECS_TASK_DEFINITION }}
+          container-name: ${{ vars.CONTAINER_NAME }}
           image: ${{ steps.build-image.outputs.image }}
 
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
           task-definition: ${{ steps.task-def.outputs.task-definition }}
-          service: ${{ env.ECS_SERVICE }}
-          cluster: ${{ env.ECS_CLUSTER }}
+          service: ${{ vars.ECS_SERVICE }}
+          cluster: ${{ vars.ECS_CLUSTER }}
           wait-for-service-stability: true
